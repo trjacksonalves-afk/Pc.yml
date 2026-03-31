@@ -32,4 +32,11 @@ jobs:
 
           & "$env:PROGRAMFILES(X86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
           --code="4/0Aci98E8iNk9eMwrIwNhnlFUcDAaSz80D7qlepgDOcF29u_FS0s-Gr93qzxTMqRmP8aAMJQ" `
-          --redirect-url="https://
+          --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
+          --name=$env:COMPUTERNAME
+
+      # ⏱️ MANTER ONLINE
+      - name: Keep Alive
+        run: |
+          Write-Host "PC online..."
+          Start-Sleep -Seconds 21600
