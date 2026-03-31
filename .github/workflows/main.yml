@@ -1,4 +1,4 @@
-name: Windows Cloud PC - AnyDesk FINAL
+name: Windows Cloud PC - AnyDesk WORKING
 
 on:
   workflow_dispatch:
@@ -9,88 +9,59 @@ jobs:
     timeout-minutes: 360
 
     steps:
-      - name: System Info
-        run: systeminfo
-
-      # 🔊 ATIVAR ÁUDIO
       - name: Enable Audio
         run: |
           Set-Service -Name Audiosrv -StartupType Automatic
           Start-Service Audiosrv
 
-      # 🎮 OTIMIZAÇÃO GRÁFICA
-      - name: Graphics Optimization
-        run: |
-          reg add "HKCU\Software\Microsoft\Avalon.Graphics" /v DisableHWAcceleration /t REG_DWORD /d 0 /f
-
-      # ⚙️ INSTALAR VC++
       - name: Install VC++
         run: |
           Invoke-WebRequest https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc.exe
           Start-Process vc.exe -ArgumentList "/install /quiet /norestart" -Wait
 
-      # 📥 INSTALAR ANYDESK
-      - name: Install AnyDesk
+      - name: Download AnyDesk
         run: |
           Invoke-WebRequest https://download.anydesk.com/AnyDesk.exe -OutFile AnyDesk.exe
-          Start-Process AnyDesk.exe -ArgumentList "--install C:\AnyDesk --start-with-win --silent" -Wait
 
-      # 🚀 FORÇAR INÍCIO DO ANYDESK
-      - name: Start AnyDesk
+      - name: Install AnyDesk (Service Mode)
+        run: |
+          Start-Process .\AnyDesk.exe -ArgumentList "--install C:\AnyDesk --start-with-win --silent" -Wait
+
+      - name: Start AnyDesk Service
+        run: |
+          Start-Service AnyDesk -ErrorAction SilentlyContinue
+          Start-Sleep -Seconds 10
+
+      - name: Force Start GUI
         run: |
           Start-Process "C:\AnyDesk\AnyDesk.exe"
-          Start-Sleep -Seconds 20
+          Start-Sleep -Seconds 15
 
-      # 🔐 DEFINIR SENHA
       - name: Set Password
         run: |
           & "C:\AnyDesk\AnyDesk.exe" --set-password 123456
 
-      # 🆔 PEGAR ID (MÉTODO 100% FUNCIONAL)
-      - name: Get AnyDesk ID
+      # 🔥 MÉTODO QUE FUNCIONA DE VERDADE
+      - name: Get AnyDesk ID (FINAL FIX)
         run: |
-          Write-Host "Buscando ID do AnyDesk..."
-          Start-Sleep -Seconds 15
+          Write-Host "Pegando ID do AnyDesk..."
+          
+          for ($i=0; $i -lt 10; $i++) {
 
-          $file = "C:\ProgramData\AnyDesk\service.conf"
+            $id = & "C:\AnyDesk\AnyDesk.exe" --get-id 2>$null
 
-          if (Test-Path $file) {
-              $id = Select-String -Path $file -Pattern "ad.anynet.id" | ForEach-Object {
-                  ($_ -split "=")[1]
-              }
-
+            if ($id -and $id.Length -gt 5) {
               Write-Host "=================================="
               Write-Host "SEU ID ANYDESK:"
               Write-Host $id
               Write-Host "SENHA: 123456"
               Write-Host "=================================="
-          } else {
-              Write-Host "Erro ao pegar ID, tentando novamente..."
-              Start-Process "C:\AnyDesk\AnyDesk.exe"
-              Start-Sleep -Seconds 20
-
-              $id = & "C:\AnyDesk\AnyDesk.exe" --get-id
-
-              Write-Host "=================================="
-              Write-Host "SEU ID ANYDESK:"
-              Write-Host $id
-              Write-Host "SENHA: 123456"
-              Write-Host "=================================="
-          }
-
-      # 🔄 MONITORAR
-      - name: Monitor AnyDesk
-        run: |
-          for ($i=0; $i -lt 500; $i++) {
-            $p = Get-Process -Name "AnyDesk" -ErrorAction SilentlyContinue
-
-            if (-not $p) {
-              Start-Process "C:\AnyDesk\AnyDesk.exe"
+              exit 0
             }
 
-            Start-Sleep -Seconds 60
+            Write-Host "Tentando novamente..."
+            Start-Sleep -Seconds 10
           }
 
-      # ⏱️ MANTER ONLINE
-      - name: Keep Alive
-        run: Start-Sleep -Seconds 21600
+          Write-Host "❌ Não foi possível obter o ID automaticamente."
+          Write-Host "➡️ Abra o AnyDesk manualmente no acesso remoto."
