@@ -1,4 +1,4 @@
-name: Windows Cloud PC - AnyDesk PRO+
+name: Windows Cloud PC - AnyDesk FIXED
 
 on:
   workflow_dispatch:
@@ -15,22 +15,15 @@ jobs:
       # 🔊 ATIVAR ÁUDIO
       - name: Enable Audio
         run: |
-          Write-Host "Ativando áudio..."
           Set-Service -Name Audiosrv -StartupType Automatic
           Start-Service Audiosrv
 
-      # 🎮 OTIMIZAÇÃO GRÁFICA BÁSICA
-      - name: Enable Graphics Optimization
+      # 🎮 OTIMIZAÇÃO GRÁFICA
+      - name: Graphics Optimization
         run: |
           reg add "HKCU\Software\Microsoft\Avalon.Graphics" /v DisableHWAcceleration /t REG_DWORD /d 0 /f
 
-      # 📦 INSTALAR DIRECTX
-      - name: Install DirectX
-        run: |
-          Invoke-WebRequest https://download.microsoft.com/download/1/1/C/11C5FDC1-1A36-4C45-8C92-ED9A4A7A2C5D/directx_Jun2010_redist.exe -OutFile dx.exe
-          Start-Process dx.exe -ArgumentList "/silent" -Wait
-
-      # ⚙️ INSTALAR VC++
+      # ⚙️ INSTALAR VC++ (ESSENCIAL)
       - name: Install VC++
         run: |
           Invoke-WebRequest https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc.exe
@@ -43,9 +36,35 @@ jobs:
           Start-Process AnyDesk.exe -ArgumentList "--install C:\AnyDesk --start-with-win --silent" -Wait
 
       # 🔐 DEFINIR SENHA
-      - name: Set AnyDesk Password
+      - name: Set Password
         run: |
           Start-Sleep -Seconds 10
           & "C:\AnyDesk\AnyDesk.exe" --set-password 123456
 
-      # 🆔 MOSTRAR ID
+      # 🆔 PEGAR ID (CORRIGIDO)
+      - name: Get AnyDesk ID
+        run: |
+          Start-Sleep -Seconds 15
+          $id = & "C:\AnyDesk\AnyDesk.exe" --get-id
+          Write-Host "=================================="
+          Write-Host "SEU ID ANYDESK:"
+          Write-Host $id
+          Write-Host "SENHA: 123456"
+          Write-Host "=================================="
+
+      # 🔄 MONITORAR
+      - name: Monitor AnyDesk
+        run: |
+          for ($i=0; $i -lt 500; $i++) {
+            $p = Get-Process -Name "AnyDesk" -ErrorAction SilentlyContinue
+
+            if (-not $p) {
+              Start-Process "C:\AnyDesk\AnyDesk.exe"
+            }
+
+            Start-Sleep -Seconds 60
+          }
+
+      # ⏱️ MANTER ONLINE
+      - name: Keep Alive
+        run: Start-Sleep -Seconds 21600
