@@ -1,0 +1,33 @@
+name: Windows Cloud PC - Chrome Remote Desktop
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Download Chrome Remote Desktop
+        run: |
+          Invoke-WebRequest https://dl.google.com/edgedl/chrome-remote-desktop/chromeremotedesktophost.msi -OutFile crd.msi
+
+      - name: Install Chrome Remote Desktop
+        run: |
+          Start-Process msiexec.exe -ArgumentList "/i crd.msi /quiet /norestart" -Wait
+
+      - name: Setup Remote Access
+        run: |
+          Write-Host "===================================="
+          Write-Host "COPIE O CÓDIGO ABAIXO:"
+          Write-Host "===================================="
+          Write-Host ""
+          Write-Host "👉 https://remotedesktop.google.com/headless"
+          Write-Host ""
+          Write-Host "===================================="
+          Write-Host "Cole o comando gerado aqui no próximo passo!"
+          Write-Host "===================================="
+
+      - name: Keep Alive
+        run: Start-Sleep -Seconds 21600
