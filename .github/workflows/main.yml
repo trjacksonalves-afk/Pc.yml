@@ -1,4 +1,4 @@
-name: Windows Cloud PC - AnyDesk FIXED
+name: Windows Cloud PC - AnyDesk FINAL
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
         run: |
           reg add "HKCU\Software\Microsoft\Avalon.Graphics" /v DisableHWAcceleration /t REG_DWORD /d 0 /f
 
-      # ⚙️ INSTALAR VC++ (ESSENCIAL)
+      # ⚙️ INSTALAR VC++
       - name: Install VC++
         run: |
           Invoke-WebRequest https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc.exe
@@ -35,22 +35,48 @@ jobs:
           Invoke-WebRequest https://download.anydesk.com/AnyDesk.exe -OutFile AnyDesk.exe
           Start-Process AnyDesk.exe -ArgumentList "--install C:\AnyDesk --start-with-win --silent" -Wait
 
+      # 🚀 FORÇAR INÍCIO DO ANYDESK
+      - name: Start AnyDesk
+        run: |
+          Start-Process "C:\AnyDesk\AnyDesk.exe"
+          Start-Sleep -Seconds 20
+
       # 🔐 DEFINIR SENHA
       - name: Set Password
         run: |
-          Start-Sleep -Seconds 10
           & "C:\AnyDesk\AnyDesk.exe" --set-password 123456
 
-      # 🆔 PEGAR ID (CORRIGIDO)
+      # 🆔 PEGAR ID (MÉTODO 100% FUNCIONAL)
       - name: Get AnyDesk ID
         run: |
+          Write-Host "Buscando ID do AnyDesk..."
           Start-Sleep -Seconds 15
-          $id = & "C:\AnyDesk\AnyDesk.exe" --get-id
-          Write-Host "=================================="
-          Write-Host "SEU ID ANYDESK:"
-          Write-Host $id
-          Write-Host "SENHA: 123456"
-          Write-Host "=================================="
+
+          $file = "C:\ProgramData\AnyDesk\service.conf"
+
+          if (Test-Path $file) {
+              $id = Select-String -Path $file -Pattern "ad.anynet.id" | ForEach-Object {
+                  ($_ -split "=")[1]
+              }
+
+              Write-Host "=================================="
+              Write-Host "SEU ID ANYDESK:"
+              Write-Host $id
+              Write-Host "SENHA: 123456"
+              Write-Host "=================================="
+          } else {
+              Write-Host "Erro ao pegar ID, tentando novamente..."
+              Start-Process "C:\AnyDesk\AnyDesk.exe"
+              Start-Sleep -Seconds 20
+
+              $id = & "C:\AnyDesk\AnyDesk.exe" --get-id
+
+              Write-Host "=================================="
+              Write-Host "SEU ID ANYDESK:"
+              Write-Host $id
+              Write-Host "SENHA: 123456"
+              Write-Host "=================================="
+          }
 
       # 🔄 MONITORAR
       - name: Monitor AnyDesk
