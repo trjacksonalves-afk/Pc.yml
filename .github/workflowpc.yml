@@ -1,0 +1,51 @@
+name: Windows Cloud PC - AnyDesk PRO+
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: System Info
+        run: systeminfo
+
+      # 🔊 ATIVAR ÁUDIO
+      - name: Enable Audio
+        run: |
+          Write-Host "Ativando áudio..."
+          Set-Service -Name Audiosrv -StartupType Automatic
+          Start-Service Audiosrv
+
+      # 🎮 OTIMIZAÇÃO GRÁFICA BÁSICA
+      - name: Enable Graphics Optimization
+        run: |
+          reg add "HKCU\Software\Microsoft\Avalon.Graphics" /v DisableHWAcceleration /t REG_DWORD /d 0 /f
+
+      # 📦 INSTALAR DIRECTX
+      - name: Install DirectX
+        run: |
+          Invoke-WebRequest https://download.microsoft.com/download/1/1/C/11C5FDC1-1A36-4C45-8C92-ED9A4A7A2C5D/directx_Jun2010_redist.exe -OutFile dx.exe
+          Start-Process dx.exe -ArgumentList "/silent" -Wait
+
+      # ⚙️ INSTALAR VC++
+      - name: Install VC++
+        run: |
+          Invoke-WebRequest https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc.exe
+          Start-Process vc.exe -ArgumentList "/install /quiet /norestart" -Wait
+
+      # 📥 INSTALAR ANYDESK
+      - name: Install AnyDesk
+        run: |
+          Invoke-WebRequest https://download.anydesk.com/AnyDesk.exe -OutFile AnyDesk.exe
+          Start-Process AnyDesk.exe -ArgumentList "--install C:\AnyDesk --start-with-win --silent" -Wait
+
+      # 🔐 DEFINIR SENHA
+      - name: Set AnyDesk Password
+        run: |
+          Start-Sleep -Seconds 10
+          & "C:\AnyDesk\AnyDesk.exe" --set-password 123456
+
+      # 🆔 MOSTRAR ID
