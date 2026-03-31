@@ -1,0 +1,42 @@
+name: Windows Cloud PC - Chrome Remote Desktop FINAL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      # 🔊 ATIVAR ÁUDIO
+      - name: Enable Audio
+        run: |
+          Set-Service -Name Audiosrv -StartupType Automatic
+          Start-Service Audiosrv
+
+      # 📥 BAIXAR CRD
+      - name: Download Chrome Remote Desktop
+        run: |
+          Invoke-WebRequest https://dl.google.com/edgedl/chrome-remote-desktop/chromeremotedesktophost.msi -OutFile crd.msi
+
+      # ⚙️ INSTALAR CRD
+      - name: Install Chrome Remote Desktop
+        run: |
+          Start-Process msiexec.exe -ArgumentList "/i crd.msi /quiet /norestart" -Wait
+
+      # 🔐 INICIAR ACESSO REMOTO (SEU CÓDIGO)
+      - name: Start Remote Desktop
+        run: |
+          $env:PROGRAMFILES(X86) = ${env:ProgramFiles(x86)}
+
+          & "$env:PROGRAMFILES(X86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
+          --code="4/0Aci98E8iNk9eMwrIwNhnlFUcDAaSz80D7qlepgDOcF29u_FS0s-Gr93qzxTMqRmP8aAMJQ" `
+          --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
+          --name=$env:COMPUTERNAME
+
+      # ⏱️ MANTER ONLINE
+      - name: Keep Alive
+        run: |
+          Write-Host "PC online..."
+          Start-Sleep -Seconds 21600
