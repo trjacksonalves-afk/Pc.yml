@@ -1,4 +1,4 @@
-name: Windows Cloud PC - Chrome Remote Desktop
+name: Windows Cloud PC - Chrome Remote Desktop PRO
 
 on:
   workflow_dispatch:
@@ -25,15 +25,17 @@ jobs:
         run: |
           Start-Process msiexec.exe -ArgumentList "/i crd.msi /quiet /norestart" -Wait
 
-      # 🔐 INICIAR ACESSO REMOTO (SEU CÓDIGO)
+      # 🔐 INICIAR ACESSO REMOTO (COM PIN)
       - name: Start Remote Desktop
         run: |
           $env:PROGRAMFILES_X86 = ${env:ProgramFiles(x86)}
+          $PIN = "123456"
 
           & "$env:PROGRAMFILES_X86\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
-          --code="4/0Aci98E-02dXYrsucisYGiurKWR64B3r6nic8OUVG5ZjmJyLJobIsbKOHYZbZPd5nLNS1hg" `
+          --code="4/0Aci98E98M1LbeqvyYgtZjygER29i81oIHBXn2B9RV4uvydvi-wFkMhvLZMKdtkmvnNkyUw" `
           --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
-          --name=$env:COMPUTERNAME
+          --name=$env:COMPUTERNAME `
+          --pin=$PIN
 
       # ⏱️ MANTER ONLINE
       - name: Keep Alive
