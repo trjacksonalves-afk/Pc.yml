@@ -27,13 +27,10 @@ jobs:
 
       # 🔐 INICIAR ACESSO REMOTO (SEU CÓDIGO)
       - name: Start Remote Desktop
-        run: |
+        run: |& "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0Aci98E8JWiP_uadw2NkwPCDApGY4bJzdqoEziRpmpZjZ7eAf3pC80Itx9k--KmdIcuoa1Q" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
           $env:PROGRAMFILES(X86) = ${env:ProgramFiles(x86)}
 
-          & "$env:PROGRAMFILES(X86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
-          --code="4/0Aci98E8iNk9eMwrIwNhnlFUcDAaSz80D7qlepgDOcF29u_FS0s-Gr93qzxTMqRmP8aAMJQ" `
-          --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
-          --name=$env:COMPUTERNAME
+          & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0Aci98E8JWiP_uadw2NkwPCDApGY4bJzdqoEziRpmpZjZ7eAf3pC80Itx9k--KmdIcuoa1Q" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
 
       # ⏱️ MANTER ONLINE
       - name: Keep Alive
