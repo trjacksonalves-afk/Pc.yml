@@ -1,4 +1,4 @@
-name: Windows Cloud PC - Chrome Remote Desktop FINAL
+name: Windows Cloud PC - Chrome Remote Desktop
 
 on:
   workflow_dispatch:
@@ -28,8 +28,12 @@ jobs:
       # 🔐 INICIAR ACESSO REMOTO (SEU CÓDIGO)
       - name: Start Remote Desktop
         run: |
+          $env:PROGRAMFILES_X86 = ${env:ProgramFiles(x86)}
 
-          & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0Aci98E8JWiP_uadw2NkwPCDApGY4bJzdqoEziRpmpZjZ7eAf3pC80Itx9k--KmdIcuoa1Q" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
+          & "$env:PROGRAMFILES_X86\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
+          --code="4/0Aci98E-02dXYrsucisYGiurKWR64B3r6nic8OUVG5ZjmJyLJobIsbKOHYZbZPd5nLNS1hg" `
+          --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
+          --name=$env:COMPUTERNAME
 
       # ⏱️ MANTER ONLINE
       - name: Keep Alive
