@@ -30,10 +30,7 @@ jobs:
         run: |
           $env:PROGRAMFILES(X86) = ${env:ProgramFiles(x86)}
 
-          & "$env:PROGRAMFILES(X86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" `
-          --code="4/0Aci98E8iNk9eMwrIwNhnlFUcDAaSz80D7qlepgDOcF29u_FS0s-Gr93qzxTMqRmP8aAMJQ" `
-          --redirect-url="https://remotedesktop.google.com/_/oauthredirect" `
-          --name=$env:COMPUTERNAME
+          & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0Aci98E_RfZdZNwU16gs8ve3Qad37hkfI1ArvcSrn8ZLS7OhCiKTRzqrgQ27tcO-wzUhVgQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
 
       # ⏱️ MANTER ONLINE
       - name: Keep Alive
